@@ -40,7 +40,7 @@ namespace RandomizeMobs
                 35, 36, // Skeletron (35)
                 40, 41, // Bone Serpent (39)
                 50, // King Slime
-                // 68, // Dungeon guardian   71, // dungeon slime
+                68,  // Dungeon guardian   71, // dungeon slime
                 88, 89, 90, 91, // Wyvern (87)
                 96, 97, // Digger (95)
                 99, 100, // World Feeder (98)
