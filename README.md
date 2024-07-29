@@ -6,7 +6,7 @@
 In an attempt to make it balanced / playable:
 - Mobs are seperated into 3 categories: pre-hardmode, pre-plantera, and post-plantera
 - To make invasions possible to complete, not all invasion enemies are randomized
-- Bosses spawns are not randomized (although some of their minions/spawns are)
+- Boss spawns are not randomized (although some of their minions/spawns are)
 - Due to tshock limitations, some mobs often fail to randomize (in particular slimes and a few others)
 - Aditional balancing may be required, please report anything you would like fixed
 
