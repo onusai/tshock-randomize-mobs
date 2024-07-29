@@ -28,19 +28,19 @@ namespace RandomizeMobs
         {
             public bool Enabled { get; set; } = true;
             public int[] MobsDontReplace { get; set; } = new int[]{
-                4, 5, // eye of cthulhu
+                4,  // eye of cthulhu 5,
                 17, 18, 19, 20, 22, 37, 38, 54, 105, 106, 107, 108, 123, 124, 142, 160, 178, 208, 209, 207, 227, 228, 229, 368, // Npcs
-                30, 33, // Chaos ball, water sphere
+                // 30, 33, // Chaos ball, water sphere
                 
                 196, 199, // nymph, lizhard transofrmations
-
+                56,
                 8, 9, // Devourer (7)
                 11, 12, // Giant Worm (10)
                 13, 14, 15, // Eater of Worlds (13)
                 35, 36, // Skeletron (35)
                 40, 41, // Bone Serpent (39)
                 50, // King Slime
-                68,  // Dungeon guardian   71, // dungeon slime
+                68, 71, // Dungeon guardian   71, // dungeon slime
                 88, 89, 90, 91, // Wyvern (87)
                 96, 97, // Digger (95)
                 99, 100, // World Feeder (98)
@@ -155,7 +155,7 @@ namespace RandomizeMobs
 
                 353, 354, // Stylist
                 369, 376, // Angler
-                370, 371, 372, 373, 374, 375, // Duke
+                370, 374, 375, // Duke 371, 372, 373, 
                 
                 379, 380, 437, 438, 439, 440, // Cultists
 
