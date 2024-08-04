@@ -220,6 +220,41 @@ namespace RandomizeMobs
                 380, 381, 382, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 395, 396, 397, 398, 399, 400, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418,
                 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 437, 438, 439, 440, 454, 455, 456, 457, 458, 459, 460, 463, 466, 468, 493, 507, 516, 517, 518, 519, 520, 521, 522, 523, 551, 578, 554, 557,
                 560, 563, 565, 567, 569, 571, 573, 575, 577 };
+
+            public Dictionary<int, int> MobsSpawnOdds { get; set; } = new Dictionary<int, int>
+            {
+                {39, 5},// bone serpent
+
+                // ooa
+                {551, 10},// betsy
+                {552, 5},// goblins
+                {553, 5},
+                {554, 5},
+                {555, 5},
+                {556, 5},
+                {557, 5},
+                {558, 6},// wyvrns
+                {559, 6},
+                {560, 6},
+                {561, 6},// javelin
+                {562, 6},
+                {563, 6},
+                {564, 7},// mage
+                {565, 7},
+                {566, 5},// skelly
+                {567, 5},
+                {568, 5},// dynos
+                {569, 5},
+                {570, 5},
+                {571, 5},
+                {572, 5},
+                {575, 5},
+                {576, 7},// ogre
+                {577, 7},
+                {578, 5},// bug
+
+                {510, 2}, // dune splicer
+            };
         }
 
         ConfigData config;
@@ -228,7 +263,7 @@ namespace RandomizeMobs
 
         public override void Initialize()
         {
-            // config = PluginConfig.Load("RandomizeMobs");
+            //config = PluginConfig.Load("RandomizeMobs");
             config = new ConfigData();
             ServerApi.Hooks.GameInitialize.Register(this, OnGameLoad);
             for (int i  = 0; i < 3;  i++)
@@ -283,7 +318,8 @@ namespace RandomizeMobs
                 while (newNPC.friendly ||
                     config.MobsDontPlace.Contains(newID) ||
                     (!Main.hardMode && (config.MobsPrePlantera.Contains(newID) || config.MobsPostPlantera.Contains(newID))) ||
-                    (!NPC.downedPlantBoss && config.MobsPostPlantera.Contains(newID))
+                    (!NPC.downedPlantBoss && config.MobsPostPlantera.Contains(newID)) ||
+                    (config.MobsSpawnOdds.ContainsKey(newID) && Main.rand.Next(0, config.MobsSpawnOdds[newID]) != 0)
                     )
                 {
                     newID = Main.rand.Next(1, 687);
@@ -347,30 +383,6 @@ namespace RandomizeMobs
             else
             {
                 pendingReplace.ElementAt(2).Add(args.NpcId);
-
-                /*
-                npc.active = false;
-                npc.type = 0;
-                TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", args.NpcId);
-
-                int newID = Main.rand.Next(1, 687); // sid; // 
-                NPC newNPC = TShock.Utils.GetNPCById(newID);
-                while (newNPC.friendly ||
-                    config.MobsDontPlace.Contains(newID) ||
-                    (!Main.hardMode && (config.MobsPrePlantera.Contains(newID) || config.MobsPostPlantera.Contains(newID))) ||
-                    (!NPC.downedPlantBoss && config.MobsPostPlantera.Contains(newID))
-                    )
-                {
-                    newID = Main.rand.Next(1, 687);
-                    newNPC = TShock.Utils.GetNPCById(newID);
-                }
-
-                TShock.Utils.Broadcast(String.Format("despawn idx({3}) old({0}) len({1}) new({2})", npc.netID, pending.Count, newID, args.NpcId), Color.White);
-
-                pending.Add(new Tuple<int, Vector2>(newID, npc.position));
-                TSPlayer.Server.SpawnNPC(newID, "", 1, (int)npc.position.X, (int)npc.position.Y);
-
-                */
             }
 
         }
