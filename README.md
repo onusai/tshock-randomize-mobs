@@ -2,8 +2,6 @@
  Randomizes enemy mob spawns
  
 ***
-VERY EXPERIMENTAL, NEEDS MORE WORK
-
 In an attempt to make it balanced / playable:
 - Mobs are seperated into 3 categories: pre-hardmode, pre-plantera, and post-plantera
 - To make invasions possible to complete, not all invasion enemies are randomized
