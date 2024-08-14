@@ -23,7 +23,6 @@ namespace RandomizeMobs
         public override Version Version => new Version(1, 0, 0, 0);
 
         List<Tuple<int, Vector2>> pending = new List<Tuple<int, Vector2>>();
-        //List<int> pendingReplace = new List<int>();
         Queue<List<int>> pendingReplace = new Queue<List<int>>(3); 
 
         public class ConfigData
@@ -263,8 +262,8 @@ namespace RandomizeMobs
 
         public override void Initialize()
         {
-            //config = PluginConfig.Load("RandomizeMobs");
-            config = new ConfigData();
+            config = PluginConfig.Load("RandomizeMobs");
+            //config = new ConfigData();
             ServerApi.Hooks.GameInitialize.Register(this, OnGameLoad);
             for (int i  = 0; i < 3;  i++)
             {
@@ -274,6 +273,8 @@ namespace RandomizeMobs
 
         void OnGameLoad(EventArgs e)
         {
+            if (!config.Enabled) return;
+
             ServerApi.Hooks.NpcSpawn.Register(this, OnNpcSpawn);
             ServerApi.Hooks.GameUpdate.Register(this, OnGameUpdate);
         }
@@ -283,8 +284,11 @@ namespace RandomizeMobs
             if (disposing)
             {
                 ServerApi.Hooks.GameInitialize.Deregister(this, OnGameLoad);
-                ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
-                ServerApi.Hooks.GameUpdate.Deregister(this, OnGameUpdate);
+                if (config.Enabled)
+                {
+                    ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
+                    ServerApi.Hooks.GameUpdate.Deregister(this, OnGameUpdate);
+                }
             }
             base.Dispose(disposing);
         }
@@ -297,7 +301,6 @@ namespace RandomizeMobs
 
         void OnGameUpdate(EventArgs args)
         {
-            
             List<int> npcIdxs = pendingReplace.Dequeue();
 
             if (npcIdxs.Count == 0) {
@@ -313,7 +316,7 @@ namespace RandomizeMobs
                 npc.type = 0;
                 TSPlayer.All.SendData(PacketTypes.NpcUpdate, "", npcidx);
 
-                int newID = Main.rand.Next(1, 687); // sid; // 
+                int newID = Main.rand.Next(1, 687);
                 NPC newNPC = TShock.Utils.GetNPCById(newID);
                 while (newNPC.friendly ||
                     config.MobsDontPlace.Contains(newID) ||
@@ -325,8 +328,6 @@ namespace RandomizeMobs
                     newID = Main.rand.Next(1, 687);
                     newNPC = TShock.Utils.GetNPCById(newID);
                 }
-
-                //TShock.Utils.Broadcast(String.Format("despawn idx({3}) old({0}) len({1}) new({2})", npc.netID, pending.Count, newID, npcidx), Color.White);
 
                 pending.Add(new Tuple<int, Vector2>(newID, npc.position));
                 TSPlayer.Server.SpawnNPC(newID, "", 1, (int)npc.position.X, (int)npc.position.Y);
@@ -374,7 +375,6 @@ namespace RandomizeMobs
             if (pos != new Vector2(-1, -1))
             {
                 npc.position = pos;
-                //TShock.Utils.Broadcast(String.Format("spawn len({0}) id({1})", pending.Count, npc.netID), Color.Yellow);
                 if (pending.Count > 10)
                 {
                     pending.Clear();
@@ -386,8 +386,6 @@ namespace RandomizeMobs
             }
 
         }
-
-
 
         public static class PluginConfig
         {
