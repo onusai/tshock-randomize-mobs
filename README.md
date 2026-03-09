@@ -12,4 +12,4 @@ In an attempt to make it balanced / playable:
 
 ***
 
-[Download RandomizeMobs.dll](https://github.com/onusai/tshock-randomize-mobs/raw/main/bin/Debug/net6.0/RandomizeMobs.dll)
+[Download RandomizeMobs.dll](https://github.com/onusai/tshock-randomize-mobs/raw/main/bin/Debug/net9.0/RandomizeMobs.dll)
